@@ -1,0 +1,13 @@
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDashboard
+metadata:
+  name: grafana-dashboard-keycloak-metrics
+  namespace: openshift-user-workload-monitoring
+  labels:
+    app: grafana
+spec:
+  instanceSelector:
+    matchLabels:
+      dashboards: grafana  
+  folder: "Dashboards"      
+  url: https://raw.githubusercontent.com/aerogear/keycloak-metrics-spi/refs/heads/master/grafana/10441.json

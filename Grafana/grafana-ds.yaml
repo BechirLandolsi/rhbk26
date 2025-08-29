@@ -1,0 +1,29 @@
+apiVersion: grafana.integreatly.org/v1beta1
+kind: GrafanaDatasource
+metadata:
+  name: grafana-ds
+  namespace: openshift-user-workload-monitoring  
+spec:
+  valuesFrom:
+    - targetPath: "secureJsonData.httpHeaderValue1"
+      valueFrom:
+        secretKeyRef:
+          name: "grafana-credentials"
+          key: "PROMETHEUS_TOKEN"
+  instanceSelector:
+    matchLabels:
+      dashboards: "grafana"
+  datasource:
+    name: Prometheus
+    type: prometheus
+    access: proxy
+    url: https://thanos-querier.openshift-monitoring.svc:9091
+    isDefault: true
+    jsonData:
+      "tlsSkipVerify": true
+      "timeInterval": "5s"
+      httpHeaderName1: 'Authorization'
+# oc create token grafana-sa --duration=8760h
+    secureJsonData:
+      "httpHeaderValue1": "Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6Im9iaGRHYjc4TWRzZVdaTXdRRTltcFJqM3Axc2MzcVN6V3p5Vnh6UUdiekkifQ.eyJhdWQiOlsiaHR0cHM6Ly9rdWJlcm5ldGVzLmRlZmF1bHQuc3ZjIl0sImV4cCI6MTc1NTg0Mjc4OSwiaWF0IjoxNzU1NzU2Mzg5LCJpc3MiOiJodHRwczovL2t1YmVybmV0ZXMuZGVmYXVsdC5zdmMiLCJqdGkiOiI0ODg1OGQ1Yi1iMWVhLTRlZmEtOWZmNy1iOTkxZWU2ODI2YTQiLCJrdWJlcm5ldGVzLmlvIjp7Im5hbWVzcGFjZSI6Im9wZW5zaGlmdC11c2VyLXdvcmtsb2FkLW1vbml0b3JpbmciLCJzZXJ2aWNlYWNjb3VudCI6eyJuYW1lIjoiZ3JhZmFuYS1zYSIsInVpZCI6ImQ1YmRkZmM1LTRjZjUtNDQ5MC04Yzc0LTQzMjQzYmFlNjVlMCJ9fSwibmJmIjoxNzU1NzU2Mzg5LCJzdWIiOiJzeXN0ZW06c2VydmljZWFjY291bnQ6b3BlbnNoaWZ0LXVzZXItd29ya2xvYWQtbW9uaXRvcmluZzpncmFmYW5hLXNhIn0.joyFF7QpyIxDrCRqN354BHoAwSNPTOBiickHQhtyGUEA5CG4VFXQEMA46KAo8Ds2fvUyhZvkiJRp2xbkzlJvWayQ1yt556sWlryQR_Cb5sgEkRApgzoRiMJTtxUzxoj9qsFIHL4iA5p-kI0tGuulrAK8QfWfwkmeKqSZW5EHMXh5QCxomYqgVH4_SsNnCZyU1Ydd4MbPSIu4DCamR71C8O39tcymVMvh3EDVYbuX2YVmKA5zL0cN9D6XJ1VAUdTHUm16hxzi_uuOBvmwzDDMgmafUJ6BDGmnB_HpWpo5KnYIel5wsCnTO0ZOXPCT1zhnKKRoYdZy5B6lYhtDbHxosmKamobvqUpnNx7HYIPwXzSJUtlKwT9a7uWz7DoVd9ewGTIyawvvXxfpan1f_6O6IgXrMH2WRRAWZqF63aexOpfl29zGllkpwa6BMl21mYlgeL_l9xPHfuOeHi4SrpBZD-2hJgZ3spP9SB1hDDOVBuVsoW79joxabBGNqG75h3IeQnxN0uXeFf6xV7fIpHHHKem_f_QhTGkd1IeZrx2q-pVVk7ChXf8luTivUzcOuJy2IWyxjEbFAbhYI1XMMCIA_nOLCR9NAufVTtV4Hm20fGBllqTDarwVTSqxNgBftfFkh94Ck6_tSfgowkqq98AGz3UVm51l9xNnlX-tJA5VvZU"
+    editable: true

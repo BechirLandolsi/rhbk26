@@ -1,0 +1,21 @@
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: grafana
+  namespace: openshift-user-workload-monitoring
+  labels:
+    app.kubernetes.io/managed-by: grafana-operator
+    dashboards: grafana
+    folders: grafana
+spec:
+  host: grafana-openshift-user-workload-monitoring.apps.cluster-ft6nf.dynamic.redhatworkshops.io
+  to:
+    kind: Service
+    name: grafana-service
+    weight: 100
+  port:
+    targetPort: grafana
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+  wildcardPolicy: None

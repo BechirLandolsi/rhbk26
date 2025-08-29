@@ -1,0 +1,17 @@
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: keycloak-management
+  namespace: keycloak
+spec:
+  host: kc-admin.apps.cluster-ft6nf.dynamic.redhatworkshops.io
+  path: /management
+  to:
+    kind: Service
+    name: keycloak-service
+    weight: 100
+  port:
+    targetPort: management
+  tls:
+    termination: edge
+  wildcardPolicy: None
