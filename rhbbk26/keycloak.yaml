@@ -80,8 +80,12 @@ spec:
       spec:
         containers:
           - volumeMounts:
-              - mountPath: /opt/keycloak/providers/
+              - mountPath: /opt/keycloak/providers/keycloak-metrics-spi-7.0.0.jar
                 name: kc-metrics-provider
+                subPath: keycloak-metrics-spi-7.0.0.jar
+              - mountPath: /opt/keycloak/providers/password-expiry-idm-1.0.0.jar
+                name: custom-provider
+                subPath: password-expiry-idm-1.0.0.jar
         volumes:
           - configMap:
               items:
@@ -89,6 +93,12 @@ spec:
                   path: keycloak-metrics-spi-7.0.0.jar
               name: kc-metrics-provider
             name: kc-metrics-provider
+          - configMap:
+              items:
+                - key: password-expiry-idm-1.0.0.jar
+                  path: password-expiry-idm-1.0.0.jar
+              name: custom-provider
+            name: custom-provider
   # Configure scheduling, affinity, tolerations, and topologySpreadConstraints
   #scheduling:
   #  priorityClassName: custom-high
