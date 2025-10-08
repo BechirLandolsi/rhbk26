@@ -55,6 +55,8 @@ spec:
 # Disable tracing if not needed
     - name: tracing-enabled
       value: 'true'
+    - name: tracing-endpoint
+      value: 'http://my-jaeger-collector:4317'
     - name: http-management-relative-path
       value: /management
   #  - name: spi-connections-http-client-default-connection-pool-size
