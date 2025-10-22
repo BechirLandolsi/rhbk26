@@ -79,6 +79,9 @@ spec:
   # Configuration to mount volumes
   unsupported:
     podTemplate:
+      metadata:
+      annotations:
+        checksum/kc-franceconnect-provider: "60f8b85d8326d55f74a464450f0c25e1feec53bbaa406194d32241ee5fe3a194"
       spec:
         containers:
           - volumeMounts:
