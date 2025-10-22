@@ -1,0 +1,14 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: minio
+  namespace: openshift-gitops
+spec:
+  destination:
+    namespace: minio
+    server: 'https://kubernetes.default.svc'
+  project: aprr
+  source:
+    path: minio
+    repoURL: 'https://github.com/BechirLandolsi/rhbk26.git'
+    targetRevision: HEAD

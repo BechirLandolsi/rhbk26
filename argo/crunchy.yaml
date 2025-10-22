@@ -1,0 +1,14 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: crunchy
+  namespace: openshift-gitops
+spec:
+  destination:
+    namespace: kc-pg-database
+    server: 'https://kubernetes.default.svc'
+  project: aprr
+  source:
+    path: crunchy
+    repoURL: 'https://github.com/BechirLandolsi/rhbk26.git'
+    targetRevision: HEAD

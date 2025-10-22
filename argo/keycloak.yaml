@@ -1,14 +1,14 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: tempostack
+  name: keycloak
   namespace: openshift-gitops
 spec:
   destination:
-    namespace: tempo
+    namespace: keycloak
     server: 'https://kubernetes.default.svc'
   project: aprr
   source:
-    path: tempo
+    path: rhbk26
     repoURL: 'https://github.com/BechirLandolsi/rhbk26.git'
     targetRevision: HEAD
