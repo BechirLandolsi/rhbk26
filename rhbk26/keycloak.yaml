@@ -51,17 +51,16 @@ spec:
   #      name: my-secret
   # To configure the other KC environment variables, the following is ignored in case of using a custom image
   additionalOptions:
-    - name: metrics-enabled
-      value: 'true'
-    - name: health-enabled
-      value: 'true'
-# Disable tracing if not needed
-    - name: tracing-enabled
-      value: 'true'
-    - name: tracing-endpoint
-      value: 'http://tempo-sample-distributor.tempo.svc.cluster.local:4317'
-    - name: http-management-relative-path
-      value: /management
+  #  - name: metrics-enabled
+  #    value: 'true'
+  #  - name: health-enabled
+  #    value: 'true'
+  #  - name: tracing-enabled
+  #    value: 'true'
+  #  - name: tracing-endpoint
+  #    value: 'http://tempo-sample-distributor.tempo.svc.cluster.local:4317'
+  #  - name: http-management-relative-path
+  #    value: /management
   #  - name: spi-connections-http-client-default-connection-pool-size
   #    secret: # Secret reference
   #      name: http-client-secret # name of the Secret
