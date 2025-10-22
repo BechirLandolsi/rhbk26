@@ -17,7 +17,7 @@ metadata:
   namespace: keycloak
 spec:
   channel: v5
-  installPlanApproval: Manual
+  installPlanApproval: Automatic
   name: crunchy-postgres-operator
   source: certified-operators
   sourceNamespace: openshift-marketplace
