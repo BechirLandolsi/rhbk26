@@ -24,8 +24,8 @@ spec:
     #poolMinSize: 10
     #poolMaxSize: 20
   hostname:
-    hostname: https://keycloak.apps.cluster-m5pwr.dynamic.redhatworkshops.io
-    admin: https://kc-admin.apps.apps.cluster-m5pwr.dynamic.redhatworkshops.io
+    hostname: https://keycloak.apps.cluster-g9zwl.g9zwl.sandbox1850.opentlc.com
+    admin: https://kc-admin.apps.cluster-g9zwl.g9zwl.sandbox1850.opentlc.com
     #strict: false
     # If all applications use the public URL this option should be enabled.
     strictBackchannel: true
