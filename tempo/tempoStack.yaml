@@ -20,3 +20,5 @@ spec:
     queryFrontend:
       jaegerQuery:
         enabled: true                # deploys Jaeger UI wired to Tempo
+        ingress:
+          type: route
