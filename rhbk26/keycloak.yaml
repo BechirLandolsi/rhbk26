@@ -4,7 +4,7 @@ metadata:
   name: keycloak
   namespace: keycloak
 spec:
-  image: quay.io/rh_ee_blandols/test-keycloak/rhbk26:26.2.9
+  image: quay.io/rh_ee_blandols/test-keycloak/rhbk26:amd64
   imagePullSecrets:
     - name: rh-ee-blandols-pull-secret
   # To configure the Keycloak initial admin user
