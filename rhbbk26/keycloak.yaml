@@ -24,8 +24,8 @@ spec:
     #poolMinSize: 10
     #poolMaxSize: 20
   hostname:
-    hostname: https://keycloak.apps.cluster-ft6nf.dynamic.redhatworkshops.io
-    admin: https://kc-admin.apps.cluster-ft6nf.dynamic.redhatworkshops.io
+    hostname: https://keycloak.apps.cluster-m5pwr.dynamic.redhatworkshops.io
+    admin: https://kc-admin.apps.apps.cluster-m5pwr.dynamic.redhatworkshops.io
     #strict: false
     # If all applications use the public URL this option should be enabled.
     strictBackchannel: true
@@ -56,7 +56,7 @@ spec:
     - name: tracing-enabled
       value: 'true'
     - name: tracing-endpoint
-      value: 'http://my-jaeger-collector:4317'
+      value: 'http://tempo-sample-distributor.tempo.svc.cluster.local:4317'
     - name: http-management-relative-path
       value: /management
   #  - name: spi-connections-http-client-default-connection-pool-size
@@ -82,19 +82,19 @@ spec:
       spec:
         containers:
           - volumeMounts:
-              - mountPath: /opt/keycloak/providers/keycloak-metrics-spi-7.0.0.jar
-                name: kc-metrics-provider
-                subPath: keycloak-metrics-spi-7.0.0.jar
+              - mountPath: /opt/keycloak/providers/keycloak-franceconnect-7.5.0.jar
+                name: kc-franceConnect-provider
+                subPath: keycloak-franceconnect-7.5.0.jar
               - mountPath: /opt/keycloak/providers/password-expiry-idm-1.0.0.jar
                 name: custom-provider
                 subPath: password-expiry-idm-1.0.0.jar
         volumes:
           - configMap:
               items:
-                - key: keycloak-metrics-spi-7.0.0.jar
-                  path: keycloak-metrics-spi-7.0.0.jar
-              name: kc-metrics-provider
-            name: kc-metrics-provider
+                - key: keycloak-franceconnect-7.5.0.jar
+                  path: keycloak-franceconnect-7.5.0.jar
+              name: kc-franceConnect-provider
+            name: kc-franceConnect-provider
           - configMap:
               items:
                 - key: password-expiry-idm-1.0.0.jar

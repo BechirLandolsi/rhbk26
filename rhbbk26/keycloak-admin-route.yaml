@@ -4,7 +4,7 @@ metadata:
   name: keycloak-admin
   namespace: keycloak
 spec:
-  host: kc-admin.apps.cluster-ft6nf.dynamic.redhatworkshops.io
+  host: kc-admin.apps.cluster-m5pwr.dynamic.redhatworkshops.io
   to:
     kind: Service
     name: keycloak-service

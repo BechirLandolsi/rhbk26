@@ -1,0 +1,22 @@
+apiVersion: tempo.grafana.com/v1alpha1
+kind: TempoStack
+metadata:
+  name: simplest
+  namespace: tempo                   # same namespace as the Secret above
+spec:
+  storage:
+    secret:
+      name: tempostack-dev-minio     # secret created in step 1
+      type: s3                       # use "s3" for MinIO/S3-compatible stores
+  storageSize: 10Gi                  # WAL + cache PVC size per component (adjust)
+  resources:
+    total:
+      limits:
+        memory: 2Gi
+        cpu: 2000m
+  template:
+    gateway:
+      enabled: true                  # creates a public entrypoint + Route
+    queryFrontend:
+      jaegerQuery:
+        enabled: true                # deploys Jaeger UI wired to Tempo

@@ -12,7 +12,3 @@ spec:
       path: /management/metrics
       interval: 5s
       scheme: http
-    - port: http
-      path: /realms/master/metrics
-      interval: 5s
-      scheme: http
