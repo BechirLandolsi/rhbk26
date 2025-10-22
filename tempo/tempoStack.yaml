@@ -16,7 +16,9 @@ spec:
         cpu: 2000m
   template:
     gateway:
-      enabled: true                  # creates a public entrypoint + Route
+      enabled: false                  # creates a public entrypoint + Route
     queryFrontend:
       jaegerQuery:
         enabled: true                # deploys Jaeger UI wired to Tempo
+        ingress:
+          type: route
