@@ -50,7 +50,7 @@ spec:
   #    secret:
   #      name: my-secret
   # To configure the other KC environment variables, the following is ignored in case of using a custom image
-  additionalOptions:
+  #additionalOptions:
   #  - name: metrics-enabled
   #    value: 'true'
   #  - name: health-enabled
