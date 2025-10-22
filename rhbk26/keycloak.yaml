@@ -80,33 +80,33 @@ spec:
       cpu: 3
       memory: 3Gi
   # Configuration to mount volumes
-  unsupported:
-    podTemplate:
-      metadata:
-        annotations:
-          checksum/kc-franceconnect-provider: "60f8b85d8326d55f74a464450f0c25e1feec53bbaa406194d32241ee5fe3a194"
-      spec:
-        containers:
-          - volumeMounts:
-              #- mountPath: /opt/keycloak/providers/keycloak-franceconnect-7.5.0.jar
-              #  name: kc-franceconnect-provider
-              #  subPath: keycloak-franceconnect-7.5.0.jar
-              - mountPath: /opt/keycloak/providers/password-expiry-idm-1.0.0.jar
-                name: custom-provider
-                subPath: password-expiry-idm-1.0.0.jar
-        volumes:
-          #- configMap:
-          #    items:
-          #      - key: keycloak-franceconnect-7.5.0.jar
-          #        path: keycloak-franceconnect-7.5.0.jar
-          #    name: kc-franceconnect-provider
-          #  name: kc-franceconnect-provider
-          - configMap:
-              items:
-                - key: password-expiry-idm-1.0.0.jar
-                  path: password-expiry-idm-1.0.0.jar
-              name: custom-provider
-            name: custom-provider
+#  unsupported:
+#    podTemplate:
+#      metadata:
+#        annotations:
+#          checksum/kc-franceconnect-provider: "60f8b85d8326d55f74a464450f0c25e1feec53bbaa406194d32241ee5fe3a194"
+#      spec:
+#        containers:
+#          - volumeMounts:
+#              - mountPath: /opt/keycloak/providers/keycloak-franceconnect-7.5.0.jar
+#                name: kc-franceconnect-provider
+#                subPath: keycloak-franceconnect-7.5.0.jar
+#              - mountPath: /opt/keycloak/providers/password-expiry-idm-1.0.0.jar
+#                name: custom-provider
+#                subPath: password-expiry-idm-1.0.0.jar
+#        volumes:
+#          - configMap:
+#              items:
+#                - key: keycloak-franceconnect-7.5.0.jar
+#                  path: keycloak-franceconnect-7.5.0.jar
+#              name: kc-franceconnect-provider
+#            name: kc-franceconnect-provider
+#          - configMap:
+#              items:
+#                - key: password-expiry-idm-1.0.0.jar
+#                  path: password-expiry-idm-1.0.0.jar
+#              name: custom-provider
+#            name: custom-provider
   # Configure scheduling, affinity, tolerations, and topologySpreadConstraints
   #scheduling:
   #  priorityClassName: custom-high
