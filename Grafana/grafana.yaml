@@ -11,6 +11,7 @@ spec:
     spec:
       template:
         spec:
+          serviceAccountName: grafana-sa
           containers:
             - name: grafana
               env:
@@ -25,30 +26,6 @@ spec:
                       key: GF_SECURITY_ADMIN_PASSWORD
                       name: grafana-credentials
   config:
-    auth:
-      disable_login_form: "false"
-      disable_signout_menu: "true"
-    auth.anonymous:
-      enabled: "false"
-    log:
-      level: warn
-      mode: console
-    auth.generic_oauth:
-      enabled: "true"
-      name: Keycloak-OAuth
-      allow_sign_up: "true"
-      client_id: grafana-qual
-      client_secret: " "
-      scopes: "openid email profile offline_access roles"
-      email_attribute_path: email
-      login_attribute_path: username
-      name_attribute_path: full_name
-      auth_url: "https://xxxxxxxxxxxxx/realms/tooling/protocol/openid-connect/auth"
-      token_url: "https://xxxxxxxxxxxxx/realms/tooling/protocol/openid-connect/token"
-      api_url: "https://xxxxxxxxxxxxxxxxx/realms/tooling/protocol/openid-connect/userinfo"
-      role_attribute_path: "contains(roles[*], 'admin') && 'Admin' || contains(roles[*], 'editor') && 'Editor' || 'Viewer'"
-      use_pkce: "true"
-      tls_client_ca: /etc/ssl/certs/custom/ca.crt
-      tls_skip_verify_insecure: "false"
-    server:
-      root_url: https://grafana.apps.cluster-ft6nf.dynamic.redhatworkshops.io
+    security:
+      admin_user: admin
+      admin_password: admin
