@@ -4,6 +4,7 @@ metadata:
   name: keycloak
   namespace: keycloak
 spec:
+#  image: quay.io/my-company/my-keycloak:latest
   # To configure the Keycloak initial admin user
   bootstrapAdmin:
     user:
