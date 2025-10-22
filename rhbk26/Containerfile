@@ -1,15 +1,12 @@
 FROM registry.redhat.io/rhbk/keycloak-rhel9:26.2 AS builder
 
-# Enable health and metrics support
+# it's manadatory to enable these variables in the build stage and delete them from the CR of keycloak
 ENV KC_HEALTH_ENABLED=true \
     KC_METRICS_ENABLED=true \
     KC_TRACING_ENABLED=true \
     KC_TRACING_ENDPOINT='http://tempo-sample-distributor.tempo.svc.cluster.local:4317' \
     KC_HTTP_MANAGEMENT_RELATIVE_PATH=/management \
     KC_DB=postgres
-
-# Configure a database vendor
-ENV KC_DB=postgres
 
 WORKDIR /opt/keycloak
 # for demonstration purposes only, please make sure to use proper certificates in production instead
