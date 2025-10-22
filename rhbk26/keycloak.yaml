@@ -83,7 +83,7 @@ spec:
         containers:
           - volumeMounts:
               - mountPath: /opt/keycloak/providers/keycloak-franceconnect-7.5.0.jar
-                name: kc-franceConnect-provider
+                name: kc-franceconnect-provider
                 subPath: keycloak-franceconnect-7.5.0.jar
               - mountPath: /opt/keycloak/providers/password-expiry-idm-1.0.0.jar
                 name: custom-provider
@@ -93,8 +93,8 @@ spec:
               items:
                 - key: keycloak-franceconnect-7.5.0.jar
                   path: keycloak-franceconnect-7.5.0.jar
-              name: kc-franceConnect-provider
-            name: kc-franceConnect-provider
+              name: kc-franceconnect-provider
+            name: kc-franceconnect-provider
           - configMap:
               items:
                 - key: password-expiry-idm-1.0.0.jar
