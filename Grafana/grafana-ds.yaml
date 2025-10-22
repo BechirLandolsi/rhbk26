@@ -4,12 +4,6 @@ metadata:
   name: grafana-ds
   namespace: openshift-user-workload-monitoring  
 spec:
-  valuesFrom:
-    - targetPath: "secureJsonData.httpHeaderValue1"
-      valueFrom:
-        secretKeyRef:
-          name: "grafana-credentials"
-          key: "PROMETHEUS_TOKEN"
   instanceSelector:
     matchLabels:
       dashboards: "grafana"
@@ -20,10 +14,10 @@ spec:
     url: https://thanos-querier.openshift-monitoring.svc:9091
     isDefault: true
     jsonData:
-#      "tlsSkipVerify": true
-#      "timeInterval": "5s"
+      "tlsSkipVerify": true
+      "timeInterval": "5s"
       httpHeaderName1: 'Authorization'
 # oc create token grafana-sa --duration=8760h
     secureJsonData:
-      httpHeaderValue1: $__file{/var/run/secrets/kubernetes.io/serviceaccount/token}
+      httpHeaderValue1: "Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IkItQ3h0OU51T3pWS2hWMEJMQ2pGX3lHWGQzUUR2cnhkSUNhbVdYU2tfQ1EifQ.eyJhdWQiOlsiaHR0cHM6Ly9rdWJlcm5ldGVzLmRlZmF1bHQuc3ZjIl0sImV4cCI6MTc5MjcwMjgxNiwiaWF0IjoxNzYxMTY2ODE2LCJpc3MiOiJodHRwczovL2t1YmVybmV0ZXMuZGVmYXVsdC5zdmMiLCJqdGkiOiJjM2M0ZTZhOS00MDM5LTQxOTItYjRkNS04YWMzNzc0OTM4OTQiLCJrdWJlcm5ldGVzLmlvIjp7Im5hbWVzcGFjZSI6Im9wZW5zaGlmdC11c2VyLXdvcmtsb2FkLW1vbml0b3JpbmciLCJzZXJ2aWNlYWNjb3VudCI6eyJuYW1lIjoiZ3JhZmFuYS1zYSIsInVpZCI6IjFiOTljMjM5LTRjMmUtNGU3ZC1iNzUyLWQ3MDQ5OTUwNzRiNyJ9fSwibmJmIjoxNzYxMTY2ODE2LCJzdWIiOiJzeXN0ZW06c2VydmljZWFjY291bnQ6b3BlbnNoaWZ0LXVzZXItd29ya2xvYWQtbW9uaXRvcmluZzpncmFmYW5hLXNhIn0.ulpJR2nujKMl5KtbDD5Q4Bl6PLbFAqzA4MaZLP6sMCuow987ddKj0zSmwVQv9QW4WhrKU5PPCcwGOeqJTfCnWsvGFhM1XU0mHzdtHM6dAZ6Gn3zU6lqgAMGRZoWxJTmL3xMwcXwx7hHDxF8huIV4GmSXTEWQJEUp3I0r6jdo5kr86dPQzZow3vgJss5MzcEMMYevAQRMXKYUDpEIdxaqzbWAuw1SPO-qVjVuzUF08ftd575d75eOXzQ2hftpCHyoc0TcWZ12XsPgYTNC3tMwd1q_6tjAv5ci6zXvmbza8ZcN28rN-YkArVFs03b1iExQ6VNjNrT7LNDUTDwJgnEnH0jN4xxZix83BhBjvW-VUdT2TBTMFk9FeZz0yVHs0Ve2dSaFljzIkQy6wbSOlhgaxDWDcVKh6AaiZ_xTPNcXNqyka4PTo3MSFYGFy8M4HBhyrMVoV71WFkmLuPKp9koi2Uf4LA1Qa3sbYa_2tf9MT7aWEv-ZfIl2w5AojdPhiIsZPcJLpq9lrY4WsJwIc_81objDOpajptRh9ISoStrpZxCgG4qDeXlw74xj-pxUlX6zFJqRhsDU8AAkU0S6TQn_lJOAlRENFDdSaDM-HrJuw3tcBaGaiu5AjbfLlPUKJF0EPjRji_jZxchvfHNci0ufZRNMSXAf01e2n7FXm7worVM"
     editable: true

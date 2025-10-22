@@ -8,7 +8,7 @@ metadata:
     dashboards: grafana
     folders: grafana
 spec:
-  host: grafana-openshift-user-workload-monitoring.apps.cluster-ft6nf.dynamic.redhatworkshops.io
+  host: grafana-openshift-user-workload-monitoring.apps.cluster-g9zwl.g9zwl.sandbox1850.opentlc.com
   to:
     kind: Service
     name: grafana-service
