@@ -19,4 +19,4 @@ spec:
   name: rhbk-operator
   source: redhat-operators
   sourceNamespace: openshift-marketplace
-  startingCSV: rhbk-operator.v26.2.9-opr.1
+  startingCSV: rhbk-operator.v26.2.10-opr.1

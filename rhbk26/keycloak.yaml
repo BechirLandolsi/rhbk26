@@ -5,7 +5,8 @@ metadata:
   namespace: keycloak
 spec:
 #  image: quay.io/rh_ee_blandols/test-keycloak/rhbk26:amd64
-#  imagePullSecrets:
+  imagePullSecrets:
+    - name: 11009103-----pull-secret
 #    - name: rh-ee-blandols-pull-secret
   # To configure the Keycloak initial admin user
   bootstrapAdmin:
@@ -61,6 +62,8 @@ spec:
       value: 'http://tempo-sample-distributor.tempo.svc.cluster.local:4317'
     - name: http-management-relative-path
       value: /management
+    - name: http-relative-path
+      value: /auth
   #  - name: spi-connections-http-client-default-connection-pool-size
   #    secret: # Secret reference
   #      name: http-client-secret # name of the Secret

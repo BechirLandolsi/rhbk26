@@ -1,0 +1,20 @@
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: keycloak-apps
+  namespace: keycloak
+  labels:
+    app: keycloak
+    app.kubernetes.io/instance: keycloak
+spec:
+  host: keycloak.apps.cluster-g9zwl.g9zwl.sandbox1850.opentlc.com
+  to:
+    kind: Service
+    name: keycloak-service
+    weight: 100
+  port:
+    targetPort: http
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+  wildcardPolicy: None
