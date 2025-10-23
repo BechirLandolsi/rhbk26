@@ -41,7 +41,7 @@ spec:
     #tlsSecret: my-tls-secret
   ingress:
     className: openshift-default
-    enabled: true
+    enabled: false
   instances: 3
   proxy:
     headers: xforwarded
