@@ -4,7 +4,7 @@ metadata:
   name: keycloak
   namespace: keycloak
 spec:
-  image: quay.io/rh_ee_blandols/test-keycloak/rhbk26:amd64
+  image: quay.io/rh_ee_blandols/test-keycloak/rhbk26:amd64-latest
   imagePullSecrets:
 #    - name: 11009103-----pull-secret
     - name: rh-ee-blandols-pull-secret
