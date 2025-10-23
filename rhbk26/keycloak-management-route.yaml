@@ -5,6 +5,7 @@ metadata:
   namespace: keycloak
 spec:
   host: kc-admin.apps.cluster-g9zwl.g9zwl.sandbox1850.opentlc.com
+# delete the /auth if you want to keep the default one, so it will be /management only
   path: /auth/management
   to:
     kind: Service

@@ -4,10 +4,10 @@ metadata:
   name: keycloak
   namespace: keycloak
 spec:
-#  image: quay.io/rh_ee_blandols/test-keycloak/rhbk26:amd64
+  image: quay.io/rh_ee_blandols/test-keycloak/rhbk26:amd64
   imagePullSecrets:
-    - name: 11009103-----pull-secret
-#    - name: rh-ee-blandols-pull-secret
+#    - name: 11009103-----pull-secret
+    - name: rh-ee-blandols-pull-secret
   # To configure the Keycloak initial admin user
   bootstrapAdmin:
     user:
@@ -28,7 +28,11 @@ spec:
     #poolMinSize: 10
     #poolMaxSize: 20
   hostname:
+  # example without /auth path
+  #  hostname: https://keycloak.apps.cluster-g9zwl.g9zwl.sandbox1850.opentlc.com
     hostname: https://keycloak.apps.cluster-g9zwl.g9zwl.sandbox1850.opentlc.com/auth
+  # example without /auth path
+  #  admin: https://kc-admin.apps.cluster-g9zwl.g9zwl.sandbox1850.opentlc.com
     admin: https://kc-admin.apps.cluster-g9zwl.g9zwl.sandbox1850.opentlc.com/auth
     #strict: false
     # If all applications use the public URL this option should be enabled.
@@ -41,6 +45,7 @@ spec:
     #tlsSecret: my-tls-secret
   ingress:
     className: openshift-default
+  # disable this feature if you don't want to use the ingress created by keycloak, in this case create you route manifest
     enabled: false
   instances: 3
   proxy:
@@ -51,19 +56,20 @@ spec:
   #    secret:
   #      name: my-secret
   # To configure the other KC environment variables, the following is ignored in case of using a custom image
-  additionalOptions:
-    - name: metrics-enabled
-      value: 'true'
-    - name: health-enabled
-      value: 'true'
-    - name: tracing-enabled
-      value: 'true'
-    - name: tracing-endpoint
-      value: 'http://tempo-sample-distributor.tempo.svc.cluster.local:4317'
-    - name: http-management-relative-path
-      value: /auth/management
-    - name: http-relative-path
-      value: /auth
+#  additionalOptions:
+#    - name: metrics-enabled
+#      value: 'true'
+#    - name: health-enabled
+#      value: 'true'
+#    - name: tracing-enabled
+#      value: 'true'
+#    - name: tracing-endpoint
+#      value: 'http://tempo-sample-distributor.tempo.svc.cluster.local:4317'
+#    - name: http-management-relative-path
+#      value: /auth/management
+# Enable this parameter if you want to keep /auth in the path of hostname
+#    - name: http-relative-path
+#      value: /auth
   #  - name: spi-connections-http-client-default-connection-pool-size
   #    secret: # Secret reference
   #      name: http-client-secret # name of the Secret
@@ -82,33 +88,33 @@ spec:
       cpu: 3
       memory: 3Gi
   # Configuration to mount volumes
-  unsupported:
-    podTemplate:
-      metadata:
-        annotations:
-          checksum/kc-franceconnect-provider: "60f8b85d8326d55f74a464450f0c25e1feec53bbaa406194d32241ee5fe3a194"
-      spec:
-        containers:
-          - volumeMounts:
-              - mountPath: /opt/keycloak/providers/keycloak-franceconnect-7.5.0.jar
-                name: kc-franceconnect-provider
-                subPath: keycloak-franceconnect-7.5.0.jar
-              - mountPath: /opt/keycloak/providers/password-expiry-idm-1.0.0.jar
-                name: custom-provider
-                subPath: password-expiry-idm-1.0.0.jar
-        volumes:
-          - configMap:
-              items:
-                - key: keycloak-franceconnect-7.5.0.jar
-                  path: keycloak-franceconnect-7.5.0.jar
-              name: kc-franceconnect-provider
-            name: kc-franceconnect-provider
-          - configMap:
-              items:
-                - key: password-expiry-idm-1.0.0.jar
-                  path: password-expiry-idm-1.0.0.jar
-              name: custom-provider
-            name: custom-provider
+#  unsupported:
+#    podTemplate:
+#      metadata:
+#        annotations:
+#          checksum/kc-franceconnect-provider: "60f8b85d8326d55f74a464450f0c25e1feec53bbaa406194d32241ee5fe3a194" 
+#      spec:
+#        containers:
+#          - volumeMounts:
+#              - mountPath: /opt/keycloak/providers/keycloak-franceconnect-7.5.0.jar
+#                name: kc-franceconnect-provider
+#                subPath: keycloak-franceconnect-7.5.0.jar
+#              - mountPath: /opt/keycloak/providers/password-expiry-idm-1.0.0.jar
+#                name: custom-provider
+#                subPath: password-expiry-idm-1.0.0.jar
+#        volumes:
+#          - configMap:
+#              items:
+#                - key: keycloak-franceconnect-7.5.0.jar
+#                  path: keycloak-franceconnect-7.5.0.jar
+#              name: kc-franceconnect-provider
+#            name: kc-franceconnect-provider
+#          - configMap:
+#              items:
+#                - key: password-expiry-idm-1.0.0.jar
+#                  path: password-expiry-idm-1.0.0.jar
+#              name: custom-provider
+#            name: custom-provider
   # Configure scheduling, affinity, tolerations, and topologySpreadConstraints
   #scheduling:
   #  priorityClassName: custom-high
