@@ -5,6 +5,7 @@ ENV KC_HEALTH_ENABLED=true \
     KC_METRICS_ENABLED=true \
     KC_TRACING_ENABLED=true \
     KC_TRACING_ENDPOINT='http://tempo-sample-distributor.tempo.svc.cluster.local:4317' \
+    KC_HTTP_MANAGEMENT_RELATIVE_PATH=/management \
     KC_DB=postgres
 
 WORKDIR /opt/keycloak
