@@ -66,7 +66,7 @@ spec:
     - name: tracing-endpoint
       value: 'http://tempo-sample-distributor.tempo.svc.cluster.local:4317'
     - name: http-management-relative-path
-      value: /auth/management
+      value: /management
 # Enable this parameter if you want to keep /auth in the path of hostname
 #    - name: http-relative-path
 #      value: /auth
