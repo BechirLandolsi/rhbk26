@@ -9,6 +9,6 @@ spec:
       app: keycloak
   endpoints:
     - port: management
-      path: /management/metrics
+      path: /auth/management/metrics
       interval: 5s
       scheme: http
