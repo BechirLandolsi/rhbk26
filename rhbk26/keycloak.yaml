@@ -28,8 +28,8 @@ spec:
     #poolMinSize: 10
     #poolMaxSize: 20
   hostname:
-    hostname: https://keycloak.apps.cluster-g9zwl.g9zwl.sandbox1850.opentlc.com
-    admin: https://kc-admin.apps.cluster-g9zwl.g9zwl.sandbox1850.opentlc.com
+    hostname: https://keycloak.apps.cluster-g9zwl.g9zwl.sandbox1850.opentlc.com/auth
+    admin: https://kc-admin.apps.cluster-g9zwl.g9zwl.sandbox1850.opentlc.com/auth
     #strict: false
     # If all applications use the public URL this option should be enabled.
     strictBackchannel: true
@@ -61,7 +61,7 @@ spec:
     - name: tracing-endpoint
       value: 'http://tempo-sample-distributor.tempo.svc.cluster.local:4317'
     - name: http-management-relative-path
-      value: /management
+      value: /auth/management
     - name: http-relative-path
       value: /auth
   #  - name: spi-connections-http-client-default-connection-pool-size

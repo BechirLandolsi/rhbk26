@@ -5,7 +5,7 @@ metadata:
   namespace: keycloak
 spec:
   host: kc-admin.apps.cluster-g9zwl.g9zwl.sandbox1850.opentlc.com
-  path: /management
+  path: /auth/management
   to:
     kind: Service
     name: keycloak-service
