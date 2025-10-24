@@ -1,0 +1,335 @@
+
+# Global knobs
+nameOverride: ""
+fullnameOverride: "keycloak"
+
+global:
+  namespace: "keycloak"            # leave empty to use release namespace
+  annotations: {}          # annotations applied to most objects
+  extraLabels: {}          # extra labels applied to most objects
+
+  # OpenShift GitOps label (optional)
+  managedByOpenshiftGitOps: false
+
+
+# --- Keycloak instance configuration ---
+
+keycloak:
+
+# Keycloak instance metadata
+  metadata:
+    name: "keycloak"   # leave empty to use fullnameOverride or generated name
+
+  bootstrapAdmin:
+    enabled: true          # <- controls creation of both bootstrap config and secret
+    user:
+      secret: initial-admin-secret
+      username: admin
+      password: admin
+
+  # Custom image override (leave empty to use operator default)
+  image: ""
+
+  # Use existing imagePullSecrets in the namespace
+  imagePullSecrets: []
+  #  - 11009103-----pull-secret
+
+  # (Optional) create the pull secret with Helm instead of pre-creating it
+  pullSecret:
+    create: false
+    name: ""
+    type: kubernetes.io/dockerconfigjson
+    # put base64-encoded .dockerconfigjson as 'data' OR plaintext in 'stringData'
+    data: {}
+    stringData: {}
+
+  # -- Number of Keycloak instances in HA mode. Default is 3.
+  # @section -- keycloak
+  # @default -- 3
+  instance: 3
+
+  db:
+    vendor: postgres
+    database: keycloak
+    host: postgresdb-primary.crunchy.svc.cluster.local
+    port: 5432
+    secret:
+      enabled: true
+      name: keycloak-db-secret
+      # Use plaintext via stringData (Kubernetes will base64-encode)
+      username: keycloak
+      password: keycloak
+    poolSize:
+      enabled: false
+      poolInitialSize: 5
+      poolMinSize: 10
+      poolMaxSize: 20
+
+  # -- In this section you can configure Keycloak hostname and related properties.
+  # @section -- keycloak
+  hostname:
+    # -- Address for accessing the administration console.
+    # Use this option if you are exposing the administration console using a reverse proxy on a different address than specified in the hostname option.
+    # @section -- keycloak
+    # @default -- ""
+    admin: https://kc-admin.apps.cluster-922dq.dynamic.redhatworkshops.io
+
+    # -- Hostname at which is the server exposed.
+    # @section -- keycloak
+    # @default -- ""
+    hostname: https://keycloak.apps.cluster-922dq.dynamic.redhatworkshops.io
+
+    # -- Disables dynamically resolving the hostname from request headers.
+    # @section -- keycloak
+    # @default -- false
+    strict: false
+
+    # -- By default backchannel URLs are dynamically resolved from request headers to allow internal and external applications.
+    # @section -- keycloak
+    # @default -- false
+    strictBackchannel: true
+
+  # -- In this section you can configure Keycloak features related to HTTP and HTTPS
+  # @section -- keycloak
+  http:
+    # -- Enables the HTTP listener.
+    # @section -- keycloak
+    # @default -- false
+    httpEnabled: true
+
+    # -- The used HTTP port.
+    # @section -- keycloak
+    # @default -- ""
+    httpPort: 8080
+
+    # -- The used HTTPS port.
+    # @section -- keycloak
+    # @default -- ""
+    httpsPort: 8443
+
+  # -- tlsSecret for Keycloak <br />
+  # Can be a valid secret with tls.crt and tls.key<br/>
+  # To create a self-signed simply use the following commands:<br/>
+  # `openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout tls.key -out tls.crt -subj "/CN=test.keycloak.org/O=Test Keycloak./C=US`<br/>
+  # `oc create secret tls example-tls-secret --cert=tls.crt --key=tls.key`
+  # @section -- keycloak
+  # @default -- ""
+  tlsSecret:
+    enabled: false                 # set to true to have Helm create the TLS secret
+    name: keycloak-tls-secret     # name of the Secret to create/use
+    # Provide cert/key as plaintext (preferred). Kubernetes will base64 them.
+    stringData:
+      tls.crt: ""                 # paste PEM cert here
+      tls.key: ""                 # paste PEM key here
+    # If you prefer pre-base64 data instead of plaintext, use 'data' (optional):
+    data: {}                      # e.g., { "tls.crt": "BASE64...", "tls.key": "BASE64..." }
+
+  # -- The deployment is, by default, exposed through a basic ingress.
+  # @section -- keycloak
+  ingress:
+
+    # -- Enable Ingress for Keycloak.
+    # @section -- keycloak
+    # @default -- false
+    enabled: false
+
+    # -- Define classname for Ingress
+    # @section -- keycloak
+    # @default -- "openshift-default"
+    className: "openshift-default"
+
+# Route config (only used when ingress.enabled == false AND hostname.hostname is set)
+  route:
+    name: "keycloak-apps"     # metadata.name for the Route
+    serviceName: "keycloak-service"  # the Service the operator exposes (adjust if different)
+    targetPort: "http"        # matches the Service port name
+    tls:
+      termination: "edge"
+      insecureEdgeTerminationPolicy: "Redirect"
+    wildcardPolicy: "None"
+
+# Admin route config (only used when hostname.admin is set)
+  routeAdmin:
+      name: "keycloak-admin"
+      serviceName: "keycloak-service"
+      targetPort: "http"
+      tls:
+        termination: "edge"
+      insecureEdgeTerminationPolicy: "Redirect"
+      wildcardPolicy: "None"
+
+  # Management Route
+  routeManagement:
+    enabled: true
+    name: "keycloak-management"
+    serviceName: "keycloak-service"
+    targetPort: "management"
+    tls:
+      termination: "edge"
+    wildcardPolicy: "None"
+
+# To configure the truststore
+  proxy:
+    headers: xforwarded
+
+# Map of truststores keyed by the CR key ("my-truststore")
+  truststores: {}
+    #my-truststore:
+    #  enabled: true                 # if true => render CR entry; also used by Secret creation
+    #  # If omitted, the Secret name defaults to the map key ("my-truststore")
+    #  secretName: my-secret         # optional override; default = "my-truststore"
+    #  createSecret: true            # if true => chart creates the Secret
+    #  # One of stringData or data (prefer stringData). Keys are filenames inside the Secret.
+    #  stringData:
+    #    cert.pem: |
+    #      -----BEGIN CERTIFICATE-----
+    #      ...
+    #      -----END CERTIFICATE-----
+    #  # data:
+    #  #   cert.pem: BASE64ENCODED
+
+    #another-truststore:
+    #  enabled: true                 # if true => render CR entry; also used by Secret creation
+    #  # If omitted, the Secret name defaults to the map key ("my-truststore")
+    #  secretName: another-secret         # optional override; default = "my-truststore"
+    #  createSecret: true            # if true => chart creates the Secret
+    #  # One of stringData or data (prefer stringData). Keys are filenames inside the Secret.
+    #  stringData:
+    #    cert.pem: |
+    #      -----BEGIN CERTIFICATE-----
+    #      ...
+    #      -----END CERTIFICATE-----
+    #  # data:
+    #  #   cert.pem: BASE64ENCODED
+
+# -- The additionalOptions field of the Keycloak CR enables Red Hat build of Keycloak to accept any available configuration in the form
+  additionalOptions:
+    enabled: true        # <— master toggle
+    options:
+      - name: metrics-enabled
+        value: "true"
+      - name: health-enabled
+        value: "true"
+      - name: tracing-enabled
+        value: "true"
+      - name: tracing-endpoint
+        value: "http://tempo-sample-distributor.tempo.svc.cluster.local:4317"
+      - name: http-management-relative-path
+        value: "/management"                     # default is "/"
+      - name: http-relative-path       
+        value: "/"                     # default is "/"
+
+  # -- specify resource requests and limits here
+  resources: 
+    requests:
+      cpu: 1
+      memory: 1500Mi
+    limits:
+      cpu: 3
+      memory: 3Gi
+
+  # ConfigMaps used by unsupported.podTemplate volumes (e.g., provider JARs)
+  providerConfigMaps: {}
+  #   custom-provider:
+  #     create: true
+  #     binaryData:
+  #       password-expiry-idm-1.0.0.jar: "<BASE64_JAR_BYTES>"
+  #   kc-franceconnect-provider:
+  #     create: true
+  #     binaryData:
+  #       keycloak-franceconnect-7.5.0.jar: "<BASE64_JAR_BYTES>"
+
+# Configuration to mount volumes
+  unsupported:
+    enabled: false        # ⬅ master toggle
+    podTemplate:
+      spec:
+        containers:
+          - name: keycloak
+            volumeMounts:
+              - name: kc-franceconnect-provider
+                mountPath: /opt/keycloak/providers/keycloak-franceconnect-7.5.0.jar
+                subPath: keycloak-franceconnect-7.5.0.jar
+              - name: custom-provider
+                mountPath: /opt/keycloak/providers/password-expiry-idm-1.0.0.jar
+                subPath: password-expiry-idm-1.0.0.jar
+        volumes:
+          - name: kc-franceconnect-provider
+            configMap:
+              name: kc-franceconnect-provider
+              items:
+                - key: keycloak-franceconnect-7.5.0.jar
+                  path: keycloak-franceconnect-7.5.0.jar
+          - name: custom-provider
+            configMap:
+              name: custom-provider
+              items:
+                - key: password-expiry-idm-1.0.0.jar
+                  path: password-expiry-idm-1.0.0.jar
+
+# Configure scheduling, affinity, tolerations, and topologySpreadConstraints
+  scheduling:
+    enabled: false                 # <— master switch
+    priorityClassName: "custom-high"
+
+    affinity:
+      podAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 10
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app: keycloak
+                  app.kubernetes.io/managed-by: keycloak-operator
+                  app.kubernetes.io/component: server
+              topologyKey: topology.kubernetes.io/zone
+
+    tolerations:
+      - key: "some-taint"
+        operator: "Exists"
+        effect: "NoSchedule"
+
+    topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: DoNotSchedule
+
+  # -- In this section you can find all properties related to the settings of transaction behavior.
+  # @section -- keycloak
+  transaction:
+
+    # -- Determine whether Keycloak should use a non-XA datasource in case the database does not support XA transactions.
+    # @section -- keycloak
+    # @default -- false
+    xaEnabled: false
+
+  # -- Red Hat build of Keycloak has packed some functionality in features, including some disabled features, such as<br />
+  # Technology Preview and deprecated features. Other features are enabled by default, but you can disable them if they<br />
+  # do not apply to your use of Red Hat build of Keycloak.
+  # See [Features](https://docs.redhat.com/en/documentation/red_hat_build_of_keycloak/26.0/html-single/server_configuration_guide/#features)
+  # @section -- keycloak
+  features:
+    # Disable features
+    # @section -- keycloak
+    # @default -- []
+    disabled: []
+    # -- Some supported features, and all preview features, are disabled by default. Here you can enable them.
+    # @section -- keycloak
+    # @default -- []
+    enabled: []
+
+# ServiceMonitor configuration
+  serviceMonitor:
+    enabled: false
+    autoPath: true 
+    name: keycloak-service-monitor
+    namespace: ""        # leave empty to use global.namespace or release namespace
+    selector:
+      matchLabels:
+        app: keycloak
+    endpoints:
+      - port: management
+        interval: 5s
+        scheme: http
+
+

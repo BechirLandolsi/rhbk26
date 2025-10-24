@@ -1,0 +1,46 @@
+{{- /* derive http-relative-path; default "/" */ -}}
+{{- $hr := dict "val" "/" -}}
+{{- $ao := .Values.keycloak.additionalOptions | default dict -}}
+{{- if and $ao.enabled $ao.options }}
+  {{- range $ao.options }}
+    {{- if eq .name "http-relative-path" }}
+      {{- $v := trimAll " " (default "" .value) -}}
+      {{- if or (eq $v "") (eq $v "/") }}
+        {{- $_ := set $hr "val" "/" -}}
+      {{- else }}
+        {{- $_ := set $hr "val" (printf "/%s" (trimAll "/" $v)) -}}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+
+{{- $ingEnabled := and (hasKey .Values.keycloak "ingress") .Values.keycloak.ingress.enabled -}}
+{{- $rawHost := default "" .Values.keycloak.hostname.hostname -}}
+{{- $host := regexReplaceAll "^https?://([^/]+).*" $rawHost "$1" -}}
+
+{{- if and (not $ingEnabled) $host }}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ .Values.keycloak.route.name | default (printf "%s-apps" (include "rhbk.fullname" .)) }}
+  namespace: {{ .Values.global.namespace | default .Release.Namespace }}
+spec:
+  host: {{ $host | quote }}
+  {{- if ne $hr.val "/" }}
+  path: {{ $hr.val | quote }}
+  {{- end }}
+  to:
+    kind: Service
+    name: {{ .Values.keycloak.route.serviceName | default (include "rhbk.fullname" .) }}
+    weight: 100
+  port:
+    targetPort: {{ .Values.keycloak.route.targetPort | default "http" | quote }}
+  {{- with .Values.keycloak.route.tls }}
+  tls:
+    termination: {{ .termination | default "edge" | quote }}
+    {{- with .insecureEdgeTerminationPolicy }}
+    insecureEdgeTerminationPolicy: {{ . | quote }}
+    {{- end }}
+  {{- end }}
+  wildcardPolicy: {{ .Values.keycloak.route.wildcardPolicy | default "None" | quote }}
+{{- end }}

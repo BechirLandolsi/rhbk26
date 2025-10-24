@@ -1,0 +1,55 @@
+{{- /* derive management path from additionalOptions; default "/" */ -}}
+{{- $ao := .Values.keycloak.additionalOptions | default dict -}}
+{{- $mp := dict "val" "/" -}}
+{{- if and $ao.enabled $ao.options }}
+  {{- range $ao.options }}
+    {{- if eq .name "http-management-relative-path" }}
+      {{- $raw := default "" .value -}}
+      {{- $raw = trimAll " " $raw -}}
+      {{- if ne $raw "" }}
+        {{- $_ := set $mp "val" (printf "/%s" (trimAll "/" $raw)) -}}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+
+{{- /* "/" -> "/metrics", else "<mp>/metrics" */ -}}
+{{- $m := dict "path" "/metrics" -}}
+{{- if ne $mp.val "/" -}}
+  {{- $_ := set $m "path" (printf "%s/metrics" $mp.val) -}}
+{{- end }}
+
+{{- $sm := .Values.keycloak.serviceMonitor | default dict -}}
+{{- if and $sm.enabled $sm.endpoints }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ $sm.name | default (printf "%s-service-monitor" (include "rhbk.fullname" .)) }}
+  namespace: {{ $sm.namespace | default (.Values.global.namespace | default .Release.Namespace) }}
+  labels:
+    {{- include "rhbk.labels" . | nindent 4 }}
+spec:
+  selector:
+    {{- if $sm.selector }}
+    {{- toYaml $sm.selector | nindent 4 }}
+    {{- else }}
+    matchLabels:
+      app: keycloak
+    {{- end }}
+  endpoints:
+    {{- range $ep := $sm.endpoints }}
+    - port: {{ $ep.port | quote }}
+      {{- if or (and $.Values.keycloak.serviceMonitor.autoPath (not (hasKey $ep "path")))
+                (and $.Values.keycloak.serviceMonitor.autoPath (eq (default "" $ep.path) "")) }}
+      path: {{ $m.path | quote }}
+      {{- else if $ep.path }}
+      path: {{ $ep.path | quote }}
+      {{- end }}
+{{- with $ep.interval }}
+      interval: {{ . | quote }}
+{{- end }}
+{{- with $ep.scheme }}
+      scheme: {{ . | quote }}
+{{- end }}
+    {{- end }}
+{{- end }}

@@ -1,0 +1,248 @@
+{{- /* derive http-relative-path; default "/" */ -}}
+{{- $hr := dict "val" "/" -}}
+{{- $ao := .Values.keycloak.additionalOptions | default dict -}}
+{{- if and $ao.enabled $ao.options }}
+  {{- range $ao.options }}
+    {{- if eq .name "http-relative-path" }}
+      {{- $raw := default "" .value -}}
+      {{- $clean := trimAll " " $raw -}}
+      {{- if or (eq $clean "") (eq $clean "/") }}
+        {{- $_ := set $hr "val" "/" -}}
+      {{- else }}
+        {{- $_ := set $hr "val" (printf "/%s" (trimAll "/" $clean)) -}}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+
+{{- /* append http-relative-path to admin/hostname only if they don't already include a path */ -}}
+{{- $rawAdmin := default "" .Values.keycloak.hostname.admin -}}
+{{- $rawHost  := default "" .Values.keycloak.hostname.hostname -}}
+{{- $adminHasPath := regexMatch `^https?://[^/]+/.*` $rawAdmin -}}
+{{- $hostHasPath  := regexMatch `^https?://[^/]+/.*` $rawHost -}}
+{{- $adminOut := $rawAdmin -}}
+{{- $hostOut  := $rawHost -}}
+{{- if and (ne $hr.val "/") (ne $rawAdmin "") (not $adminHasPath) -}}
+  {{- $adminOut = printf "%s%s" (trimSuffix "/" $rawAdmin) $hr.val -}}
+{{- end -}}
+{{- if and (ne $hr.val "/") (ne $rawHost "") (not $hostHasPath) -}}
+  {{- $hostOut = printf "%s%s" (trimSuffix "/" $rawHost) $hr.val -}}
+{{- end }}
+
+apiVersion: k8s.keycloak.org/v2alpha1
+kind: Keycloak
+metadata:
+  name: {{ .Values.keycloak.metadata.name | default (include "rhbk.fullname" .) }}
+  namespace: {{ .Values.global.namespace | default .Release.Namespace }}
+spec:
+# Configure number of Keycloak instances
+  instances: {{ .instance | default "3" }}
+
+# Configure Keycloak image
+  {{- with .Values.keycloak.image }}
+  image: {{ . | quote }}
+  {{- end }}
+
+# Configure image pull secrets
+  {{- with .Values.keycloak.imagePullSecrets }}
+  imagePullSecrets:
+    {{- range . }}
+    - name: {{ . | quote }}
+    {{- end }}
+  {{- end }}
+
+# Configure bootstrap admin user
+  {{- if and .Values.keycloak.bootstrapAdmin.enabled .Values.keycloak.bootstrapAdmin.user.secret }}
+  bootstrapAdmin:
+    user:
+      secret: {{ .Values.keycloak.bootstrapAdmin.user.secret | quote }}
+  {{- end }}
+
+# Configure database settings  
+{{- with .Values.keycloak.db }}
+  db:
+    vendor: {{ .vendor | quote }}
+    {{- if .host }}
+    host: {{ .host | quote }}
+    {{- end }}
+    {{- if .port }}
+    port: {{ .port }}
+    {{- end }}
+    {{- if .database }}
+    database: {{ .database | quote }}
+    {{- end }}
+    {{- if .secret.enabled }}
+    usernameSecret:
+      name: {{ .secret.name | quote }}
+      key: "username"
+    passwordSecret:
+      name: {{ .secret.name | quote }}
+      key: "password"
+    {{- end }}
+    {{- if and .poolSize .poolSize.enabled }}
+    poolInitialSize: {{ .poolSize.poolInitialSize }}
+    poolMinSize: {{ .poolSize.poolMinSize }}
+    poolMaxSize: {{ .poolSize.poolMaxSize }}
+    {{- end }}
+  {{- end }}
+
+# Configure hostname settings
+  hostname:
+    {{- if $adminOut }}
+    admin: {{ $adminOut | quote }}
+    {{- end }}
+    {{- if $hostOut }}
+    hostname: {{ $hostOut | quote }}
+    {{- end }}
+    {{- if hasKey .Values.keycloak.hostname "strict" }}
+    strict: {{ .Values.keycloak.hostname.strict }}
+    {{- end }}
+    {{- if hasKey .Values.keycloak.hostname "strictBackchannel" }}
+    strictBackchannel: {{ .Values.keycloak.hostname.strictBackchannel }}
+    {{- end }}
+
+# Configure HTTP settings
+  http:
+    {{- if hasKey .Values.keycloak.http "httpEnabled" }}
+    httpEnabled: {{ .Values.keycloak.http.httpEnabled }}
+    {{- end }}
+    {{- with .Values.keycloak.http.httpPort }}
+    httpPort: {{ . }}
+    {{- end }}
+    {{- with .Values.keycloak.http.httpsPort }}
+    httpsPort: {{ . }}
+    {{- end }}
+    {{- if and .Values.keycloak.tlsSecret.enabled .Values.keycloak.tlsSecret.name }}
+    tlsSecret: {{ .Values.keycloak.tlsSecret.name | quote }}
+    {{- end }}
+
+# Configure ingress settings
+  {{- with .Values.keycloak.ingress }}
+  ingress:
+    {{- if hasKey . "className" }}
+    className: {{ .className | quote }}
+    {{- end }}
+    {{- if hasKey . "enabled" }}
+    enabled: {{ .enabled }}
+    {{- end }}
+  {{- end }}
+
+# Configure proxy settings
+  {{- with .Values.keycloak.proxy }}
+  proxy:
+    {{- if hasKey . "headers" }}
+    headers: {{ .headers | quote }}
+    {{- end }}
+  {{- end }}
+
+# Configure truststores
+  {{- $ts := .Values.keycloak.truststores | default dict }}
+  {{- if $ts }}
+  truststores:
+    {{- range $name, $cfg := $ts }}
+    {{- if $cfg.enabled }}
+    {{ $name }}:
+      secret:
+        name: {{ default $name $cfg.secretName | quote }}
+    {{- end }}
+    {{- end }}
+  {{- end }}
+
+# Configure additional options
+  {{- with .Values.keycloak.additionalOptions }}
+  {{- if and .enabled .options }}
+  additionalOptions:
+    {{- range .options }}
+    {{- if and (eq .name "http-management-relative-path") (or (eq .value "/") (eq .value "")) }}
+    - name: "http-management-relative-path"
+      value: "/"
+    {{- else }}
+    - name: {{ .name | quote }}
+      value: {{ .value | quote }}
+    {{- end }}
+    {{- end }}
+  {{- end }}
+  {{- end }}
+
+
+# Configure resource requests and limits
+  {{- with .Values.keycloak.resources }}
+  resources:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+
+# Configure unsupported volume mounts and containers
+  {{- with .Values.keycloak.unsupported }}
+  {{- if .enabled }}
+  unsupported:
+    {{- with .podTemplate }}
+    podTemplate:
+      {{- with .metadata }}
+      metadata:
+        {{- with .annotations }}
+        annotations:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+      {{- end }}
+      {{- with .spec }}
+      spec:
+        {{- with .containers }}
+        containers:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- with .volumes }}
+        volumes:
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+  {{- end }}
+
+  # Configure scheduling, affinity, tolerations, and topologySpreadConstraints
+  {{- with .Values.keycloak.scheduling }}
+  {{- if .enabled }}
+  scheduling:
+    {{- with .priorityClassName }}
+    priorityClassName: {{ . | quote }}
+    {{- end }}
+    {{- with .affinity }}
+    affinity:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+    {{- with .tolerations }}
+    tolerations:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+    {{- with .topologySpreadConstraints }}
+    topologySpreadConstraints:
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
+  {{- end }}
+  {{- end }}
+
+# Configure transaction settings
+  {{- if .transaction }}
+  transaction:
+  {{- if eq (.transaction.xaEnabled | toString) "true" }}
+    xaEnabled: true
+  {{- end }}
+  {{- end }}
+
+# Configure features
+  {{- if .features }}
+  features:
+    {{- if .features.disabled }}
+    disabled:
+    {{- range .features.disabled }}
+      - {{ . }}
+    {{- end }}
+    {{- end }}
+    {{- if .features.enabled }}
+    enabled:
+    {{- range .features.enabled }}
+      - {{ . }}
+    {{- end }}
+    {{- end }}
+  {{- end }}
+
