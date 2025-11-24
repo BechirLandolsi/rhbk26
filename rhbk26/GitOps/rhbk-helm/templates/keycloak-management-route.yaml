@@ -1,25 +1,12 @@
-{{- /* -------- derive http-relative-path; default "/" -------- */ -}}
-{{- $hr := dict "val" "/" -}}
+{{- /* -------- derive management path ONLY (ignore http-relative-path) -------- */ -}}
+{{- $mp := dict "val" "/management" -}}
 {{- $ao := .Values.keycloak.additionalOptions | default dict -}}
-{{- if and $ao.enabled $ao.options }}
-  {{- range $ao.options }}
-    {{- if eq .name "http-relative-path" }}
-      {{- $v := trimAll " " .value -}}
-      {{- if or (eq $v "") (eq $v "/") }}
-        {{- $_ := set $hr "val" "/" -}}
-      {{- else }}
-        {{- $_ := set $hr "val" (printf "/%s" (trimAll "/" $v)) -}}
-      {{- end }}
-    {{- end }}
-  {{- end }}
-{{- end }}
 
-{{- /* -------- derive management path; default "/" -------- */ -}}
-{{- $mp := dict "val" "/" -}}
 {{- if and $ao.enabled $ao.options }}
   {{- range $ao.options }}
     {{- if eq .name "http-management-relative-path" }}
       {{- $v := trimAll " " .value -}}
+
       {{- if or (eq $v "") (eq $v "/") }}
         {{- $_ := set $mp "val" "/" -}}
       {{- else }}
@@ -29,19 +16,7 @@
   {{- end }}
 {{- end }}
 
-{{- /* -------- join http-relative-path + management path -------- */ -}}
-{{- $joined := dict "val" "/" -}}
-{{- if eq $hr.val "/" }}
-  {{- $_ := set $joined "val" $mp.val -}}
-{{- else }}
-  {{- if or (eq $mp.val "/") (eq $mp.val "") }}
-    {{- $_ := set $joined "val" $hr.val -}}
-  {{- else }}
-    {{- $_ := set $joined "val" (printf "%s/%s" $hr.val (trimPrefix "/" $mp.val)) -}}
-  {{- end }}
-{{- end }}
-
-{{- /* -------- host from hostname.admin (strip scheme) -------- */ -}}
+{{- /* -------- get admin host (strip scheme) -------- */ -}}
 {{- $rawAdmin := (default "" .Values.keycloak.hostname.admin) -}}
 {{- $adminHost := (regexReplaceAll "^https?://([^/]+).*" $rawAdmin "$1") -}}
 
@@ -53,15 +28,19 @@ metadata:
   namespace: {{ .Values.global.namespace | default .Release.Namespace }}
 spec:
   host: {{ $adminHost | quote }}
-  {{- if ne $joined.val "/" }}
-  path: {{ $joined.val | quote }}
+
+  {{- if ne $mp.val "/" }}
+  path: {{ $mp.val | quote }}
   {{- end }}
+
   to:
     kind: Service
     name: {{ .Values.keycloak.routeManagement.serviceName | default (include "rhbk.fullname" .) }}
     weight: 100
+
   port:
     targetPort: {{ .Values.keycloak.routeManagement.targetPort | default "management" | quote }}
+
   {{- with .Values.keycloak.routeManagement.tls }}
   tls:
     termination: {{ .termination | default "edge" | quote }}
@@ -69,5 +48,6 @@ spec:
     insecureEdgeTerminationPolicy: {{ . | quote }}
     {{- end }}
   {{- end }}
+
   wildcardPolicy: {{ .Values.keycloak.routeManagement.wildcardPolicy | default "None" | quote }}
 {{- end }}
