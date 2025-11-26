@@ -270,9 +270,26 @@ keycloak:
 # Configure scheduling, affinity, tolerations, and topologySpreadConstraints
   scheduling:
     enabled: false                 # <— master switch
-    priorityClassName: "custom-high"
-
     affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: node-role.kubernetes.io/keycloak
+              operator: In
+              values:
+              - "true"
+              
+      podAntiAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+        - labelSelector:
+            matchLabels:
+              app: keycloak
+              app.kubernetes.io/component: server
+              app.kubernetes.io/instance: keycloak
+              app.kubernetes.io/managed-by: keycloak-operator
+          topologyKey: kubernetes.io/hostname
+          
       podAffinity:
         preferredDuringSchedulingIgnoredDuringExecution:
           - weight: 10
