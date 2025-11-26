@@ -36,7 +36,7 @@ metadata:
   namespace: {{ .Values.global.namespace | default .Release.Namespace }}
 spec:
 # Configure number of Keycloak instances
-  instances: {{ .instance | default "3" }}
+  instances: {{ .Values.keycloak.instance | default "3" }}
 
 # Configure Keycloak image
   {{- with .Values.keycloak.image }}
