@@ -117,7 +117,28 @@ spec:
             name: custom-provider
   # Configure scheduling, affinity, tolerations, and topologySpreadConstraints
   #scheduling:
-  #  priorityClassName: custom-high
+  #  affinity:
+  #    nodeAffinity:
+  #      requiredDuringSchedulingIgnoredDuringExecution:
+  #        nodeSelectorTerms:
+  #        - matchExpressions:
+  #          - key: node-role.kubernetes.io/keycloak
+  #            operator: In
+  #            values:
+  #            - "true"
+  #    podAntiAffinity:
+  #      requiredDuringSchedulingIgnoredDuringExecution:
+  #      - labelSelector:
+  #          matchLabels:
+  #            app: keycloak
+  #            app.kubernetes.io/component: server
+  #            app.kubernetes.io/instance: keycloak
+  #            app.kubernetes.io/managed-by: keycloak-operator
+  #        topologyKey: kubernetes.io/hostname
+  #  topologySpreadConstraints:
+  #    - maxSkew: 1
+  #      topologyKey: kubernetes.io/hostname
+  #      whenUnsatisfiable: DoNotSchedule
   #  affinity:
   #    podAffinity:
   #      preferredDuringSchedulingIgnoredDuringExecution:
@@ -133,7 +154,3 @@ spec:
   #  - key: "some-taint"
   #    operator: "Exists"
   #    effect: "NoSchedule"
-  #  topologySpreadConstraints:
-  #  - maxSkew: 1
-  #    topologyKey: kubernetes.io/hostname
-  #    whenUnsatisfiable: DoNotSchedule
