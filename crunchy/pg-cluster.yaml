@@ -2,7 +2,7 @@ apiVersion: postgres-operator.crunchydata.com/v1beta1
 kind: PostgresCluster
 metadata:
   name: postgresdb
-  namespace: crunchy
+  namespace: keycloak
 spec:
   openshift: true
   postgresVersion: 16
