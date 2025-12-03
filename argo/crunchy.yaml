@@ -5,9 +5,9 @@ metadata:
   namespace: openshift-gitops
 spec:
   destination:
-    namespace: kc-pg-database
+    namespace: keycloak
     server: 'https://kubernetes.default.svc'
-  project: aprr
+  project: default
   source:
     path: crunchy
     repoURL: 'https://github.com/BechirLandolsi/rhbk26.git'
