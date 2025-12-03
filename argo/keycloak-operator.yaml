@@ -12,3 +12,5 @@ spec:
     path: rhbk26/GitOps/rhbk-operator
     repoURL: 'https://github.com/BechirLandolsi/rhbk26.git'
     targetRevision: HEAD
+    kustomize: {}
+
