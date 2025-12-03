@@ -46,12 +46,12 @@ keycloak:
   # -- Number of Keycloak instances in HA mode. Default is 3.
   # @section -- keycloak
   # @default -- 3
-  instance: 3
+  instance: 1
 
   db:
     vendor: postgres
     database: keycloak
-    host: postgresdb-primary.crunchy.svc.cluster.local
+    host: postgresdb-primary.keycloak.svc.cluster.local
     port: 5432
     secret:
       enabled: true
@@ -72,12 +72,12 @@ keycloak:
     # Use this option if you are exposing the administration console using a reverse proxy on a different address than specified in the hostname option.
     # @section -- keycloak
     # @default -- ""
-    admin: https://kc-admin.apps.cluster-922dq.dynamic.redhatworkshops.io
+    admin: https://kc-admin.apps.cluster-q7g8t.q7g8t.sandbox2518.opentlc.com
 
     # -- Hostname at which is the server exposed.
     # @section -- keycloak
     # @default -- ""
-    hostname: https://keycloak.apps.cluster-922dq.dynamic.redhatworkshops.io
+    hostname: https://keycloak.apps.cluster-q7g8t.q7g8t.sandbox2518.opentlc.com
 
     # -- Disables dynamically resolving the hostname from request headers.
     # @section -- keycloak
