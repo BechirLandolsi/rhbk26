@@ -9,7 +9,7 @@ spec:
     server: 'https://kubernetes.default.svc'
   project: default
   source:
-    path: rhbk26/GitOps/rhbk-operator
+    path: rhbk26/GitOps/rhbk-operator/base
     repoURL: 'https://github.com/BechirLandolsi/rhbk26.git'
     targetRevision: HEAD
     kustomize: {}
