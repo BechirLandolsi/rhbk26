@@ -1,0 +1,46 @@
+apiVersion: operator.openshift.io/v1
+kind: Authentication
+metadata:
+  annotations:
+    include.release.openshift.io/self-managed-high-availability: 'true'
+    include.release.openshift.io/single-node-developer: 'true'
+    release.openshift.io/create-only: 'true'
+  name: cluster
+spec:
+  type: OIDC 
+  webhookTokenAuthenticator: null 
+  oidcProviders: 
+  - claimMappings:
+      extra: 
+      - key: example.com/role
+        valueExpression: claims.?role.orValue("unknown")
+      groups:
+        claim: groups 
+        prefix: 'oidc-groups-test:'
+      uid: 
+        claim: "sub"
+      username:
+        claim: email 
+        prefixPolicy: Prefix
+        prefix:
+          prefixString: 'oidc-user-test:'
+    issuer:
+      audiences: 
+      - console-test
+      - oc-cli-test
+      issuerCertificateAuthority:
+        name: keycloak-oidc-ca 
+      issuerURL: https://keycloak-keycloak.apps.example.com/realms/master 
+    name: 'keycloak-oidc-server' 
+    oidcClients:
+    - clientID: oc-cli-test 
+      componentName: cli
+      componentNamespace: openshift-console
+    - clientID: console-test 
+      clientSecret:
+        name: console-secret 
+      componentName: console
+      componentNamespace: openshift-console
+      extraScopes: 
+        - email
+        - profile
