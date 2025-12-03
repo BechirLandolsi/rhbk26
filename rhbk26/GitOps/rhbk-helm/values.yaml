@@ -72,12 +72,12 @@ keycloak:
     # Use this option if you are exposing the administration console using a reverse proxy on a different address than specified in the hostname option.
     # @section -- keycloak
     # @default -- ""
-    admin: https://kc-admin.apps.cluster-q7g8t.q7g8t.sandbox2518.opentlc.com
+    admin: https://kc-admin.apps.cluster-n7p86.dynamic.redhatworkshops.io
 
     # -- Hostname at which is the server exposed.
     # @section -- keycloak
     # @default -- ""
-    hostname: https://keycloak.apps.cluster-q7g8t.q7g8t.sandbox2518.opentlc.com
+    hostname: https://keycloak.apps.cluster-n7p86.dynamic.redhatworkshops.io
 
     # -- Disables dynamically resolving the hostname from request headers.
     # @section -- keycloak
@@ -210,10 +210,10 @@ keycloak:
         value: "true"
       - name: health-enabled
         value: "true"
-      - name: tracing-enabled
-        value: "true"
-      - name: tracing-endpoint
-        value: "http://tempo-sample-distributor.tempo.svc.cluster.local:4317"
+      #- name: tracing-enabled
+      # value: "true"
+      #- name: tracing-endpoint
+      #  value: "http://tempo-sample-distributor.tempo.svc.cluster.local:4317"
       - name: http-management-relative-path
         value: "/management"                     # default is "/"
       - name: http-relative-path       
