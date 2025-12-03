@@ -9,6 +9,9 @@ spec:
     server: 'https://kubernetes.default.svc'
   project: default
   source:
-    path: rhbk26
+    path: rhbk26/GitOps/rhbk-helm
     repoURL: 'https://github.com/BechirLandolsi/rhbk26.git'
     targetRevision: HEAD
+    helm:
+      valueFiles:
+        - values.yaml

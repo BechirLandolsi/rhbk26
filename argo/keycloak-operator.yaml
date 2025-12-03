@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: keycloak
+  name: keycloak-operator
   namespace: openshift-gitops
 spec:
   destination:
@@ -9,6 +9,6 @@ spec:
     server: 'https://kubernetes.default.svc'
   project: default
   source:
-    path: rhbk26
+    path: rhbk26/GitOps/rhbk-operator
     repoURL: 'https://github.com/BechirLandolsi/rhbk26.git'
     targetRevision: HEAD
