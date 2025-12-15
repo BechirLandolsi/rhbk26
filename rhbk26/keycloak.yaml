@@ -14,7 +14,7 @@ spec:
       secret: initial-admin-secret
   db:
     database: keycloak
-    host: postgresdb-primary.crunchy.svc.cluster.local
+    host: postgresdb-primary.keycloak.svc.cluster.local
     passwordSecret:
       key: password
       name: keycloak-db-secret
