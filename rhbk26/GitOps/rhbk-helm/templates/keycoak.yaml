@@ -29,14 +29,17 @@
   {{- $hostOut = printf "%s%s" (trimSuffix "/" $rawHost) $hr.val -}}
 {{- end }}
 
+{{- $as := .Values.keycloak.autoscaling | default dict -}}
 apiVersion: k8s.keycloak.org/v2alpha1
 kind: Keycloak
 metadata:
-  name: {{ .Values.keycloak.metadata.name | default (include "rhbk.fullname" .) }}
+  name: {{ include "rhbk.keycloakName" . }}
   namespace: {{ .Values.global.namespace | default .Release.Namespace }}
 spec:
-# Configure number of Keycloak instances
+{{- if not ($as.enabled | default false) }}
+# Configure number of Keycloak instances (ignored when keycloak.autoscaling.enabled is true; HPA / scale subresource owns replica count)
   instances: {{ .Values.keycloak.instance | default "3" }}
+{{- end }}
 
 # Configure Keycloak image
   {{- with .Values.keycloak.image }}

@@ -1,0 +1,32 @@
+{{- $as := .Values.keycloak.autoscaling | default dict -}}
+{{- if $as.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "rhbk.keycloakName" . }}-hpa
+  namespace: {{ .Values.global.namespace | default .Release.Namespace }}
+  labels:
+    {{- include "rhbk.labels" . | nindent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: k8s.keycloak.org/v2alpha1
+    kind: Keycloak
+    name: {{ include "rhbk.keycloakName" . }}
+  minReplicas: {{ $as.minReplicas }}
+  maxReplicas: {{ $as.maxReplicas }}
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ $as.targetCPUUtilizationPercentage }}
+{{- if $as.targetMemoryUtilizationPercentage }}
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: {{ $as.targetMemoryUtilizationPercentage }}
+{{- end }}
+{{- end }}

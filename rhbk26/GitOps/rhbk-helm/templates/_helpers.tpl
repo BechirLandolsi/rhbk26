@@ -32,3 +32,7 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{ toYaml . }}
 {{- end }}
 {{- end }}
+
+{{- define "rhbk.keycloakName" -}}
+{{- .Values.keycloak.metadata.name | default (include "rhbk.fullname" .) -}}
+{{- end }}

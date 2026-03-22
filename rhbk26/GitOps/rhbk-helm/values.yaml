@@ -43,10 +43,19 @@ keycloak:
     data: {}
     stringData: {}
 
-  # -- Number of Keycloak instances in HA mode. Default is 3.
+  # -- Number of Keycloak instances when autoscaling is disabled (spec.instances).
+  # When keycloak.autoscaling.enabled is true, this value is not set on the Keycloak CR; replica count is driven by the HorizontalPodAutoscaler (min/max) and the CR scale subresource.
   # @section -- keycloak
   # @default -- 3
-  instance: 1
+  instance: 2
+
+  # HorizontalPodAutoscaler targets the Keycloak CR (k8s.keycloak.org/v2alpha1), not the StatefulSet. Requires RHBK 26.2+.
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 5
+    targetCPUUtilizationPercentage: 65
+    # targetMemoryUtilizationPercentage: 80
 
   db:
     vendor: postgres
