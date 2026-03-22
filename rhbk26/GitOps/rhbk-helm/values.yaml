@@ -51,7 +51,7 @@ keycloak:
 
   # HorizontalPodAutoscaler targets the Keycloak CR (k8s.keycloak.org/v2alpha1), not the StatefulSet. Requires RHBK 26.2+.
   autoscaling:
-    enabled: true
+    enabled: false
     minReplicas: 1
     maxReplicas: 5
     targetCPUUtilizationPercentage: 65
