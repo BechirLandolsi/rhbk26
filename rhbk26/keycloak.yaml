@@ -47,7 +47,11 @@ spec:
     className: openshift-default
   # disable this feature if you don't want to use the ingress created by keycloak, in this case create you route manifest
     enabled: false
+  # instances to be removed if HPA is enabled and used.
   instances: 3
+  update:
+    strategy: Auto
+    revision: ""
   proxy:
     headers: xforwarded
   # To configure the truststore

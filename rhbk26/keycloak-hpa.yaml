@@ -1,0 +1,27 @@
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: keycloak-hpa
+  namespace: keycloak
+  labels:
+    app.kubernetes.io/name: keycloak
+spec:
+  scaleTargetRef:
+    apiVersion: k8s.keycloak.org/v2alpha1
+    kind: Keycloak
+    name: keycloak
+  minReplicas: 1
+  maxReplicas: 5
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 65
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 80
