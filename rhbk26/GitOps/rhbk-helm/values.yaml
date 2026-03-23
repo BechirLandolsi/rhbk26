@@ -27,8 +27,14 @@ keycloak:
       username: admin
       password: admin
 
-  # Custom image override (leave empty to use operator default)
+  # Custom image override (leave empty to use operator default).
+  # Prefer pinning by digest when the tag is reused: registry.example.com/rhbk@sha256:<digest>
+  # Same tag + new digest does not change this string, so the cluster will not roll until you change digest here or use rolloutRevision.
   image: ""
+
+  # When the tag string stays fixed but image content changes, set this to the new digest, build id, or Git SHA so the Keycloak pod template changes and the operator rolls pods.
+  # CI/CD can inject via --set keycloak.rolloutRevision="$(skopeo inspect ... Digest)" or similar.
+  rolloutRevision: ""
 
   # Use existing imagePullSecrets in the namespace
   imagePullSecrets: []
@@ -56,6 +62,15 @@ keycloak:
     maxReplicas: 5
     targetCPUUtilizationPercentage: 65
     # targetMemoryUtilizationPercentage: 80
+
+  # Operator update strategy when the Keycloak CR changes (Helm upgrade). See Keycloak/RHBK operator guide: rolling updates.
+  # RecreateOnImageChange — on image change, scale down then up (short outage). Omit strategy (empty) to use operator default.
+  # Auto — operator picks rolling when it considers the change safe (compatibility Job; keep 2+ replicas for rolling to avoid downtime).
+  # Explicit — rolling vs recreate tied to spec.update.revision; exercise caution with OLM operator upgrades.
+  update:
+    strategy: Auto
+    # Required for Explicit; ignored otherwise
+    revision: ""
 
   db:
     vendor: postgres
@@ -255,6 +270,9 @@ keycloak:
       spec:
         containers:
           - name: keycloak
+            env:
+              - name: MY_CUSTOM_VAR
+                value: "something"
             volumeMounts:
               - name: kc-franceconnect-provider
                 mountPath: /opt/keycloak/providers/keycloak-franceconnect-7.5.0.jar
@@ -340,6 +358,7 @@ keycloak:
     # @default -- []
     disabled: []
     # -- Some supported features, and all preview features, are disabled by default. Here you can enable them.
+    # For experimental rolling updates across patch versions with update.strategy Auto, you may add: rolling-updates:v2 (see operator rolling-updates guide).
     # @section -- keycloak
     # @default -- []
     enabled: []

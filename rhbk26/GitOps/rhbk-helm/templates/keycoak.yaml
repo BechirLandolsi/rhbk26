@@ -41,6 +41,15 @@ spec:
   instances: {{ .Values.keycloak.instance | default "3" }}
 {{- end }}
 
+  {{- $up := .Values.keycloak.update | default dict }}
+  {{- if $up.strategy }}
+  update:
+    strategy: {{ $up.strategy | quote }}
+    {{- if and (eq $up.strategy "Explicit") $up.revision }}
+    revision: {{ $up.revision | quote }}
+    {{- end }}
+  {{- end }}
+
 # Configure Keycloak image
   {{- with .Values.keycloak.image }}
   image: {{ . | quote }}
@@ -174,32 +183,39 @@ spec:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 
-# Configure unsupported volume mounts and containers
-  {{- with .Values.keycloak.unsupported }}
-  {{- if .enabled }}
+# Configure unsupported volume mounts and containers (and optional rollout trigger annotation)
+  {{- $uns := .Values.keycloak.unsupported | default dict }}
+  {{- $rollout := .Values.keycloak.rolloutRevision | default "" }}
+  {{- $annotations := dict }}
+  {{- if ne $rollout "" }}
+  {{- $_ := set $annotations "rhbk-helm.io/image-content-revision" $rollout }}
+  {{- end }}
+  {{- $pt := $uns.podTemplate | default dict }}
+  {{- $md := $pt.metadata | default dict }}
+  {{- range $k, $v := ($md.annotations | default dict) }}
+  {{- $_ := set $annotations $k $v }}
+  {{- end }}
+  {{- $hasSpec := and ($uns.enabled | default false) $pt.spec }}
+  {{- $hasPodTemplate := or $hasSpec (gt (len $annotations) 0) }}
+  {{- if $hasPodTemplate }}
   unsupported:
-    {{- with .podTemplate }}
     podTemplate:
-      {{- with .metadata }}
+      {{- if gt (len $annotations) 0 }}
       metadata:
-        {{- with .annotations }}
         annotations:
-          {{- toYaml . | nindent 10 }}
-        {{- end }}
+          {{- toYaml $annotations | nindent 10 }}
       {{- end }}
-      {{- with .spec }}
+      {{- if $hasSpec }}
       spec:
-        {{- with .containers }}
+        {{- with $pt.spec.containers }}
         containers:
           {{- toYaml . | nindent 10 }}
         {{- end }}
-        {{- with .volumes }}
+        {{- with $pt.spec.volumes }}
         volumes:
           {{- toYaml . | nindent 10 }}
         {{- end }}
       {{- end }}
-    {{- end }}
-  {{- end }}
   {{- end }}
 
   # Configure scheduling, affinity, tolerations, and topologySpreadConstraints
